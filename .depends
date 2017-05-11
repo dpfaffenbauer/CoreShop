@@ -1,0 +1,7 @@
+Component\Resource
+Component\Registry
+Component\Rule
+Component\Address
+Component\Shipping
+Bundle\ResourceBundle
+Bundle\RuleBundle
