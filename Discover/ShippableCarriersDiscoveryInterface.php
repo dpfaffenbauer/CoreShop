@@ -8,20 +8,21 @@
  *
  * @copyright  Copyright (c) 2015-2017 Dominik Pfaffenbauer (https://www.pfaffenbauer.at)
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
-*/
+ */
 
-namespace CoreShop\Bundle\ShippingBundle\Processor;
+namespace CoreShop\Bundle\ShippingBundle\Discover;
 
 use CoreShop\Component\Address\Model\AddressInterface;
+use CoreShop\Component\Shipping\Model\CarrierInterface;
 use CoreShop\Component\Shipping\Model\ShippableInterface;
 
-interface CartCarrierProcessorInterface
+interface ShippableCarriersDiscoveryInterface
 {
     /**
-     * @param ShippableInterface    $shippable
-     * @param AddressInterface      $address
+     * @param ShippableInterface $shippable
+     * @param AddressInterface $address
      *
-     * @return mixed
+     * @return CarrierInterface[]
      */
-    public function getCarriersForCart(ShippableInterface $shippable, AddressInterface $address);
+    public function discoverCarriers(ShippableInterface $shippable, AddressInterface $address);
 }
