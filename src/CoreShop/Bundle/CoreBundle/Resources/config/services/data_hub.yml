@@ -17,3 +17,17 @@ services:
             - '%coreshop.model.product_store_values.class%'
         tags:
             - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_coreShopStoreValues }
+
+    CoreShop\Bundle\CoreBundle\DataHub\InputType\AddToCartInputItemTypeExtension:
+        arguments:
+            - '@CoreShop\Bundle\ResourceBundle\DataHub\InputTypeFactoryInterface'
+        tags:
+            - { name: coreshop.datahub.input_type_extension }
+
+    CoreShop\Bundle\CoreBundle\DataHub\InputType\CartItemInputItemTypeExtension:
+        tags:
+            - { name: coreshop.datahub.input_type_extension }
+
+    CoreShop\Bundle\CoreBundle\DataHub\Query\Extension\AddToCartMutationQueryExtension:
+        tags:
+            - { name: coreshop.datahub.query_extension }

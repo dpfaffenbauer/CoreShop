@@ -7,3 +7,26 @@ services:
             - '%coreshop.model.cart_price_rule.class%'
         tags:
             - { name: pimcore.datahub.graphql.dataobjectquerytypegenerator, id: typegenerator_dataobjectquerydatatype_coreShopCartPriceRule }
+
+    CoreShop\Bundle\OrderBundle\DataHub\AddToCartMutationQuery:
+        arguments:
+            - '%coreshop.model.order.pimcore_class_name%'
+            - '@CoreShop\Bundle\ResourceBundle\DataHub\InputTypeFactoryInterface'
+            - '@Pimcore\Bundle\DataHubBundle\GraphQL\Service'
+            - '@event_dispatcher'
+            - '@coreshop.repository.store'
+            - '@coreshop.repository.stack.purchasable'
+            - '@coreshop.repository.order'
+            - '@coreshop.factory.order'
+            - '@coreshop.factory.order_item'
+            - '@CoreShop\Component\Order\Cart\CartModifierInterface'
+            - '@CoreShop\Component\Order\Manager\CartManagerInterface'
+            - !tagged_iterator coreshop.datahub.query_extension
+        tags:
+            - { name: coreshop.data_hub.query, type: add-to-cart-mutation }
+
+    CoreShop\Bundle\OrderBundle\DataHub\InputType\AddToCartInputType:
+        arguments:
+            - '@CoreShop\Bundle\ResourceBundle\DataHub\InputTypeFactoryInterface'
+        tags:
+          { name: coreshop.datahub.input_type }

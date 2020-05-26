@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace CoreShop\Bundle\ResourceBundle;
 
+use CoreShop\Bundle\ResourceBundle\DependencyInjection\Compiler\DataHubQueriesPass;
 use CoreShop\Bundle\ResourceBundle\DependencyInjection\Compiler\DoctrineTargetEntitiesResolverPass;
 use CoreShop\Bundle\ResourceBundle\DependencyInjection\Compiler\RegisterInstallersPass;
 use CoreShop\Bundle\ResourceBundle\DependencyInjection\Compiler\RegisterPimcoreRepositoriesPass;
@@ -56,6 +57,10 @@ final class CoreShopResourceBundle extends AbstractPimcoreBundle implements Depe
         $container->addCompilerPass(new StackRepositoryPass());
         $container->addCompilerPass(new RegisterPimcoreRepositoriesPass());
         $container->addCompilerPass(new ValidatorAutoMappingFixPass());
+
+        if (array_key_exists('PimcoreDataHubBundle', $container->getParameter('kernel.bundles'))) {
+            $container->addCompilerPass(new DataHubQueriesPass());
+        }
     }
 
     /**

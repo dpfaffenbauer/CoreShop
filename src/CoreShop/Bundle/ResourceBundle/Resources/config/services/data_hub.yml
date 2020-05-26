@@ -1,6 +1,33 @@
 services:
-    coreshop.data_hub.doctrine_provider:
-        class: CoreShop\Component\Resource\DataHub\DoctrineProvider
+    coreshop.registry.data_hub.queries:
+        class: CoreShop\Component\Registry\ServiceRegistry
+        arguments:
+            - CoreShop\Bundle\ResourceBundle\DataHub\DataHubQueryInterface
+            - 'coreshop-data-hub-queries'
+        tags:
+            - { name: coreshop.registry, type_hint: data-hub-querires }
+
+    coreshop.data_hub.doctrine_provider: '@CoreShop\Component\Resource\DataHub\DoctrineProvider'
+    CoreShop\Component\Resource\DataHub\DoctrineProvider:
         public: true
         arguments:
             - '@doctrine.orm.default_entity_manager'
+            - '@coreshop.resource_registry'
+
+    CoreShop\Bundle\ResourceBundle\DataHub\EventListener\BuildSchemaListener:
+        arguments:
+            - '@coreshop.registry.data_hub.queries'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    CoreShop\Bundle\ResourceBundle\DataHub\ResourcesDataHubQueries:
+        arguments:
+            - '@CoreShop\Component\Resource\DataHub\DoctrineProvider'
+        tags:
+            - { name: coreshop.data_hub.query, type: resource-queries }
+
+    CoreShop\Bundle\ResourceBundle\DataHub\InputTypeFactoryInterface: '@CoreShop\Bundle\ResourceBundle\DataHub\InputTypeFactory'
+    CoreShop\Bundle\ResourceBundle\DataHub\InputTypeFactory:
+        arguments:
+            - !tagged_iterator coreshop.datahub.input_type
+            - !tagged_iterator coreshop.datahub.input_type_extension

@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace CoreShop\Bundle\ResourceBundle\DependencyInjection;
 
+use CoreShop\Bundle\ResourceBundle\DataHub\DataHubQueryInterface;
+use CoreShop\Bundle\ResourceBundle\DependencyInjection\Compiler\DataHubQueriesPass;
 use CoreShop\Bundle\ResourceBundle\DependencyInjection\Compiler\RegisterInstallersPass;
 use CoreShop\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractModelExtension;
 use CoreShop\Bundle\ResourceBundle\EventListener\BodyListener;
@@ -70,6 +72,10 @@ final class CoreShopResourceExtension extends AbstractModelExtension
 
         if (array_key_exists('PimcoreDataHubBundle', $bundles)) {
             $loader->load('services/data_hub.yml');
+
+            $container
+                ->registerForAutoconfiguration(DataHubQueryInterface::class)
+                ->addTag(DataHubQueriesPass::DATA_HUB_TAG);
         }
 
         $this->loadPersistence($config['drivers'], $config['resources'], $loader);

@@ -39,14 +39,7 @@ final class CartContext implements CartContextInterface
         /**
          * @var OrderInterface $cart
          */
-        $cart = $this->cartFactory->createNew();
-        $cart->setKey(uniqid());
-        $cart->setPublished(true);
-        $cart->setSaleState(OrderSaleStates::STATE_CART);
-        $cart->setOrderState(OrderStates::STATE_INITIALIZED);
-        $cart->setShippingState(OrderShipmentStates::STATE_NEW);
-        $cart->setPaymentState(OrderPaymentStates::STATE_NEW);
-        $cart->setInvoiceState(OrderInvoiceStates::STATE_NEW);
+        return $this->cartFactory->createNew();
 
         return $cart;
     }

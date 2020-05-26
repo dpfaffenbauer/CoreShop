@@ -51,3 +51,4 @@ composer.lock
 docker-compose.yml
 app/config/local/
 app/config/pimcore/
+external_vendor/

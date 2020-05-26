@@ -14,6 +14,11 @@ declare(strict_types=1);
 
 namespace CoreShop\Component\Order\Factory;
 
+use CoreShop\Component\Order\OrderInvoiceStates;
+use CoreShop\Component\Order\OrderPaymentStates;
+use CoreShop\Component\Order\OrderSaleStates;
+use CoreShop\Component\Order\OrderShipmentStates;
+use CoreShop\Component\Order\OrderStates;
 use CoreShop\Component\Resource\Factory\FactoryInterface;
 
 class OrderFactory implements FactoryInterface
@@ -36,6 +41,11 @@ class OrderFactory implements FactoryInterface
         $cart = $this->cartFactory->createNew();
         $cart->setKey(uniqid('cart', true));
         $cart->setPublished(true);
+        $cart->setSaleState(OrderSaleStates::STATE_CART);
+        $cart->setOrderState(OrderStates::STATE_INITIALIZED);
+        $cart->setShippingState(OrderShipmentStates::STATE_NEW);
+        $cart->setPaymentState(OrderPaymentStates::STATE_NEW);
+        $cart->setInvoiceState(OrderInvoiceStates::STATE_NEW);
 
         return $cart;
     }
