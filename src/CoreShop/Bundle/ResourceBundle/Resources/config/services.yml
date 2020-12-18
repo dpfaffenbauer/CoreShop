@@ -14,8 +14,15 @@ services:
     CoreShop\Component\Resource\Metadata\RegistryInterface: '@CoreShop\Component\Resource\Metadata\Registry'
     CoreShop\Component\Resource\Metadata\Registry: ~
 
-    pimcore.dao.object_manager: '@CoreShop\Bundle\ResourceBundle\Pimcore\ObjectManager'
-    CoreShop\Bundle\ResourceBundle\Pimcore\ObjectManager: ~
+    pimcore.dao.object_manager:
+        alias: 'CoreShop\Bundle\ResourceBundle\Pimcore\ObjectManager'
+        public: true
+
+    CoreShop\Bundle\ResourceBundle\Pimcore\ObjectManager:
+        public: true
+        arguments:
+            - '@CoreShop\Bundle\PessimisticEntityLockBundle\Manager\EntityLockManagerInterface'
+            - '@CoreShop\Bundle\OptimisticEntityLockBundle\Manager\EntityLockManagerInterface'
 
     CoreShop\Bundle\ResourceBundle\Serialization\RelationsHandler:
         arguments:

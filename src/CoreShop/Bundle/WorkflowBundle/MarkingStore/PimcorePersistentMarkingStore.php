@@ -12,6 +12,7 @@
 
 namespace CoreShop\Bundle\WorkflowBundle\MarkingStore;
 
+use CoreShop\Bundle\PessimisticEntityLockBundle\Manager\EntityLockManager;
 use Pimcore\Model\DataObject\Concrete;
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\MarkingStore\MarkingStoreInterface;
@@ -48,7 +49,7 @@ class PimcorePersistentMarkingStore implements MarkingStoreInterface
     {
         $this->originMarkingStore->setMarking($subject, $marking);
         if ($subject instanceof Concrete) {
-            $subject->save();
+            \Pimcore::getContainer()->get(EntityLockManager::class)->write($subject);
         }
     }
 }

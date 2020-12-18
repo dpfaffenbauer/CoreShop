@@ -12,13 +12,18 @@
 
 namespace CoreShop\Bundle\ResourceBundle\Pimcore;
 
+use CoreShop\Bundle\OptimisticEntityLockBundle\Manager\EntityLockManagerInterface as OptimisticEntityLockManagerInterface;
+use CoreShop\Bundle\PessimisticEntityLockBundle\Manager\EntityLockManagerInterface as PessimisticEntityLockManagerInterface;
+use Doctrine\DBAL\LockMode;
 use Pimcore\Model\AbstractModel;
 use Pimcore\Model\DataObject\Concrete;
-use Pimcore\Model\Element\ElementInterface;
 use Webmozart\Assert\Assert;
 
 final class ObjectManager implements \Doctrine\Common\Persistence\ObjectManager
 {
+    protected $pessimisticManager;
+    protected $optimisticEntityManager;
+
     /**
      * @var array
      */
@@ -39,12 +44,32 @@ final class ObjectManager implements \Doctrine\Common\Persistence\ObjectManager
      */
     private $modelsToRemove = [];
 
+    public function __construct(
+        PessimisticEntityLockManagerInterface $pessimisticManager,
+        OptimisticEntityLockManagerInterface $optimisticEntityManager
+    ) {
+        $this->pessimisticManager = $pessimisticManager;
+        $this->optimisticEntityManager = $optimisticEntityManager;
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function find($className, $id)
+    public function find($className, $id, $lockMode = null, $lockVersion = null)
     {
-        return $className::getById($id);
+        switch ($lockMode) {
+            case LockMode::PESSIMISTIC_READ:
+            case LockMode::PESSIMISTIC_WRITE:
+                return $this->pessimisticManager->read($className, $id, $lockMode);
+        }
+
+        $entity = $className::getById($id);
+
+        if ($entity && $lockMode === LockMode::OPTIMISTIC) {
+            $this->optimisticEntityManager->lock($entity, $lockVersion);
+        }
+
+        return $entity;
     }
 
     /**

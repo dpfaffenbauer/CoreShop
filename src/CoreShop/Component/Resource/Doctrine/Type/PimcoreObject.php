@@ -12,6 +12,7 @@
 
 namespace CoreShop\Component\Resource\Doctrine\Type;
 
+use CoreShop\Bundle\ResourceBundle\Pimcore\ObjectManager;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
@@ -34,7 +35,7 @@ class PimcoreObject extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return AbstractObject::getById($value);
+        return \Pimcore::getContainer()->get(ObjectManager::class)->find(AbstractObject::class, $value);
     }
 
     /**

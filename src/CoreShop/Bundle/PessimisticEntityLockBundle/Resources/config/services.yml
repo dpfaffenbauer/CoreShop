@@ -1,0 +1,6 @@
+services:
+    CoreShop\Bundle\PessimisticEntityLockBundle\Manager\EntityLockManagerInterface: '@CoreShop\Bundle\PessimisticEntityLockBundle\Manager\EntityLockManager'
+    CoreShop\Bundle\PessimisticEntityLockBundle\Manager\EntityLockManager:
+        arguments:
+            - '@doctrine.dbal.default_connection'
+        public: true
