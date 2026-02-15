@@ -80,6 +80,10 @@ interface OrderInterface extends
 
     public function setPaymentState(?string $paymentState);
 
+    public function getReturnState(): ?string;
+
+    public function setReturnState(?string $returnState);
+
     public function getOrderDate(): ?Carbon;
 
     public function setOrderDate(?Carbon $orderDate);

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace CoreShop\Component\Order\Model;
+namespace CoreShop\Component\Rma\Model;
+
+use CoreShop\Component\Order\Model\OrderDocumentItemInterface;
 
 interface OrderReturnItemInterface extends OrderDocumentItemInterface
 {

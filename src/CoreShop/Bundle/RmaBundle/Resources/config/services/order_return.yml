@@ -1,0 +1,33 @@
+services:
+    _defaults:
+        public: true
+
+    coreshop.order_return.number_generator.default:
+        class: CoreShop\Component\Order\NumberGenerator\SequenceNumberGenerator
+        arguments:
+            - '@CoreShop\Component\Sequence\Generator\SequenceGeneratorInterface'
+            - 'return'
+
+    CoreShop\Component\Rma\Transformer\OrderItemToReturnItemTransformer:
+        arguments:
+            - '@CoreShop\Component\Resource\Service\FolderCreationServiceInterface'
+            - '@CoreShop\Component\Order\Transformer\TransformerEventDispatcherInterface'
+
+    CoreShop\Component\Rma\Transformer\OrderToReturnTransformer:
+        arguments:
+            - '@CoreShop\Component\Rma\Transformer\OrderItemToReturnItemTransformer'
+            - '@coreshop.order_return.number_generator.default'
+            - '@CoreShop\Component\Resource\Service\FolderCreationServiceInterface'
+            - '@coreshop.repository.order_item'
+            - '@coreshop.factory.order_return_item'
+            - '@CoreShop\Component\Order\Transformer\TransformerEventDispatcherInterface'
+
+    coreshop.order.transformer.order_to_return.state_applier:
+        class: CoreShop\Component\Order\Transformer\OrderToOrderDocumentTransformerWorkflowApplier
+        decorates: CoreShop\Component\Rma\Transformer\OrderToReturnTransformer
+        arguments:
+             - '@coreshop.order.transformer.order_to_return.state_applier.inner'
+             - '@CoreShop\Bundle\WorkflowBundle\Manager\StateMachineManagerInterface'
+             - !php/const CoreShop\Component\Rma\ReturnStates::STATE_NEW
+             - !php/const CoreShop\Component\Rma\ReturnTransitions::IDENTIFIER
+             - !php/const CoreShop\Component\Rma\ReturnTransitions::TRANSITION_CREATE

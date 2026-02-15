@@ -1,0 +1,43 @@
+coreshop:
+    order_return:
+        return: 'Retoure'
+        order: 'Bestellung'
+        date: 'Retourendatum'
+        number: 'Retourennummer'
+        state: 'Status'
+        items: 'Positionen'
+    order_return_item:
+        item: 'Retourenposition'
+        order_item: 'Bestellposition'
+        quantity: 'Menge'
+        total_net: 'Gesamt (Netto)'
+        total_gross: 'Gesamt (Brutto)'
+        converted_total_net: 'Umgerechneter Gesamt (Netto)'
+        converted_total_gross: 'Umgerechneter Gesamt (Brutto)'
+    rma:
+        permission:
+            order_return: 'CoreShop - Retouren'
+    workflow:
+        state:
+            coreshop_return:
+                new: 'Neu'
+                confirmed: 'Bestätigt'
+                cancelled: 'Storniert'
+                received: 'Empfangen'
+            coreshop_order_return:
+                new: 'Neu'
+                requested: 'Retoure angefragt'
+                partially_returned: 'Teilweise retourniert'
+                returned: 'Retourniert'
+                cancelled: 'Storniert'
+        transition:
+            coreshop_return:
+                create: 'Erstellen'
+                confirm: 'Bestätigen'
+                receive: 'Empfangen'
+                cancel: 'Stornieren'
+            coreshop_order_return:
+                request_return: 'Retoure anfragen'
+                partially_return: 'Teilweise retournieren'
+                return: 'Retournieren'
+                cancel: 'Stornieren'

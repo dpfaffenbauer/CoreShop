@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CoreShop\Component\Order;
+namespace CoreShop\Component\Rma;
 
 final class OrderReturnStates
 {

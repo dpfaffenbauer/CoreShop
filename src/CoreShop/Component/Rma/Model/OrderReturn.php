@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CoreShop\Component\Order\Model;
+namespace CoreShop\Component\Rma\Model;
 
 use Carbon\Carbon;
 use CoreShop\Component\Resource\Pimcore\Model\AbstractPimcoreModel;
@@ -16,17 +16,17 @@ abstract class OrderReturn extends AbstractPimcoreModel implements OrderReturnIn
 
     public function getPrintBodyController(array $params = []): string
     {
-        return 'CoreShop\Bundle\OrderBundle\Controller\OrderDocumentPrintController::returnAction';
+        return 'CoreShop\Bundle\RmaBundle\Controller\OrderDocumentPrintController::returnAction';
     }
 
     public function getPrintHeaderController(array $params = []): string
     {
-        return 'CoreShop\Bundle\OrderBundle\Controller\OrderDocumentPrintController::headerAction';
+        return 'CoreShop\Bundle\RmaBundle\Controller\OrderDocumentPrintController::headerAction';
     }
 
     public function getPrintFooterController(array $params = []): string
     {
-        return 'CoreShop\Bundle\OrderBundle\Controller\OrderDocumentPrintController::footerAction';
+        return 'CoreShop\Bundle\RmaBundle\Controller\OrderDocumentPrintController::footerAction';
     }
 
     public function getRenderedAsset()

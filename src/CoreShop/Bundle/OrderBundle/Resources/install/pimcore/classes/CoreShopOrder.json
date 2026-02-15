@@ -3302,6 +3302,28 @@
                                 "invisible": false,
                                 "visibleGridView": false,
                                 "visibleSearch": false
+                            },
+                            {
+                                "fieldtype": "input",
+                                "width": null,
+                                "columnLength": 190,
+                                "regex": "",
+                                "unique": false,
+                                "showCharCount": null,
+                                "name": "returnState",
+                                "title": "coreshop.order.return_state",
+                                "tooltip": "",
+                                "mandatory": false,
+                                "noteditable": true,
+                                "index": false,
+                                "locked": false,
+                                "style": "",
+                                "permissions": null,
+                                "datatype": "data",
+                                "relationType": false,
+                                "invisible": false,
+                                "visibleGridView": false,
+                                "visibleSearch": false
                             }
                         ],
                         "locked": false,

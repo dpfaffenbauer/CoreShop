@@ -1,0 +1,43 @@
+coreshop:
+    order_return:
+        return: 'Return'
+        order: 'Order'
+        date: 'Return Date'
+        number: 'Return Number'
+        state: 'State'
+        items: 'Items'
+    order_return_item:
+        item: 'Return Item'
+        order_item: 'Order Item'
+        quantity: 'Quantity'
+        total_net: 'Total (Net)'
+        total_gross: 'Total (Gross)'
+        converted_total_net: 'Converted Total (Net)'
+        converted_total_gross: 'Converted Total (Gross)'
+    rma:
+        permission:
+            order_return: 'CoreShop - Order Returns'
+    workflow:
+        state:
+            coreshop_return:
+                new: 'New'
+                confirmed: 'Confirmed'
+                cancelled: 'Cancelled'
+                received: 'Received'
+            coreshop_order_return:
+                new: 'New'
+                requested: 'Return Requested'
+                partially_returned: 'Partially Returned'
+                returned: 'Returned'
+                cancelled: 'Cancelled'
+        transition:
+            coreshop_return:
+                create: 'Create'
+                confirm: 'Confirm'
+                receive: 'Receive'
+                cancel: 'Cancel'
+            coreshop_order_return:
+                request_return: 'Request Return'
+                partially_return: 'Partially Return'
+                return: 'Return'
+                cancel: 'Cancel'

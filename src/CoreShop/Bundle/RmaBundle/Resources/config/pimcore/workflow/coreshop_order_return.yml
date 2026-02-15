@@ -1,0 +1,44 @@
+framework:
+    workflows:
+        coreshop_order_return:
+            type: 'state_machine'
+            marking_store:
+                service: coreshop.state_machine.marking_store.order_return_pimcore_marking_store
+            supports: CoreShop\Component\Order\Model\Order
+
+core_shop_workflow:
+    state_machine:
+        coreshop_order_return:
+            places:
+                - new
+                - requested
+                - cancelled
+                - partially_returned
+                - returned
+            transitions:
+                request_return:
+                    from: [new]
+                    to: requested
+                partially_return:
+                    from: [requested]
+                    to: partially_returned
+                cancel:
+                    from: [new, requested]
+                    to: cancelled
+                return:
+                    from: [requested, partially_returned]
+                    to: returned
+
+            place_colors:
+                new: '#61c2cb'
+                requested: '#feb624'
+                partially_returned: '#f27024'
+                returned: '#5b981a'
+                cancelled: '#f2583e'
+
+            callbacks:
+                after:
+                    resolve_state:
+                        on: ['return']
+                        do: ['@CoreShop\Bundle\OrderBundle\StateResolver\OrderStateResolver', 'resolve']
+                        args: ['object']

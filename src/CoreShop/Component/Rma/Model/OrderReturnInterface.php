@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace CoreShop\Component\Order\Model;
+namespace CoreShop\Component\Rma\Model;
 
 use Carbon\Carbon;
+use CoreShop\Component\Order\Model\OrderDocumentInterface;
 
 interface OrderReturnInterface extends OrderDocumentInterface
 {
