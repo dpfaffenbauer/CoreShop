@@ -1,0 +1,26 @@
+services:
+    _defaults:
+        public: false
+
+    CoreShop\Component\Subscription\Resolver\NextBillingDateResolverInterface: '@CoreShop\Bundle\SubscriptionBundle\Resolver\NextBillingDateResolver'
+    CoreShop\Bundle\SubscriptionBundle\Resolver\NextBillingDateResolver: ~
+
+    CoreShop\Component\Subscription\Checker\EligibilityCheckerInterface: '@CoreShop\Bundle\SubscriptionBundle\Checker\EligibilityChecker'
+    CoreShop\Bundle\SubscriptionBundle\Checker\EligibilityChecker: ~
+
+    CoreShop\Component\Subscription\Processor\SubscriptionOrderCreatorInterface: '@CoreShop\Bundle\SubscriptionBundle\Processor\SubscriptionOrderCreator'
+    CoreShop\Bundle\SubscriptionBundle\Processor\SubscriptionOrderCreator:
+        arguments:
+            - '@coreshop.factory.order'
+            - '@coreshop.factory.order_item'
+            - '@CoreShop\Component\Order\Cart\CartModifierInterface'
+            - '@CoreShop\Component\Order\Processor\CartProcessorInterface'
+
+    CoreShop\Component\Subscription\Processor\RenewalProcessorInterface: '@CoreShop\Bundle\SubscriptionBundle\Processor\RenewalProcessor'
+    CoreShop\Bundle\SubscriptionBundle\Processor\RenewalProcessor:
+        arguments:
+            - '@CoreShop\Component\Subscription\Checker\EligibilityCheckerInterface'
+            - '@CoreShop\Component\Subscription\Processor\SubscriptionOrderCreatorInterface'
+            - '@CoreShop\Component\Subscription\Resolver\NextBillingDateResolverInterface'
+            - '@Symfony\Component\Workflow\Registry'
+            - '@Symfony\Contracts\EventDispatcher\EventDispatcherInterface'

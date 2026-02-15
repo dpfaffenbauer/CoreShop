@@ -1,0 +1,17 @@
+services:
+    _defaults:
+        public: false
+
+    CoreShop\Bundle\SubscriptionBundle\Command\ProcessRenewalsCommand:
+        arguments:
+            - '@coreshop.repository.subscription'
+            - '@Symfony\Component\Messenger\MessageBusInterface'
+        tags:
+            - { name: console.command }
+
+    CoreShop\Bundle\SubscriptionBundle\Command\ExpireSubscriptionsCommand:
+        arguments:
+            - '@coreshop.repository.subscription'
+            - '@Symfony\Component\Messenger\MessageBusInterface'
+        tags:
+            - { name: console.command }

@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * CoreShop
+ *
+ * This source file is available under the terms of the
+ * CoreShop Commercial License (CCL)
+ * Full copyright and license information is available in
+ * LICENSE.md which is distributed with this source code.
+ *
+ * @copyright  Copyright (c) CoreShop GmbH (https://www.coreshop.com)
+ * @license    CoreShop Commercial License (CCL)
+ *
+ */
+
+namespace CoreShop\Bundle\SubscriptionBundle\Messenger;
+
+final class ExpireSubscriptionMessage
+{
+    public function __construct(
+        public readonly int $subscriptionId,
+        public readonly string $reason = 'payment_failed_max_retries',
+    ) {
+    }
+}

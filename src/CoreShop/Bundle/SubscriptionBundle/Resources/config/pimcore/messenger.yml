@@ -1,0 +1,20 @@
+framework:
+    messenger:
+        transports:
+            coreshop_subscription:
+                dsn: "doctrine://default?queue_name=coreshop_subscription"
+                failure_transport: coreshop_subscription_failed
+                retry_strategy:
+                    max_retries: 3
+                    delay: 300000
+                    multiplier: 3
+            coreshop_subscription_failed:
+                dsn: "doctrine://default?queue_name=coreshop_subscription_failed"
+                retry_strategy:
+                    max_retries: 0
+
+        routing:
+            'CoreShop\Bundle\SubscriptionBundle\Messenger\ScheduleRenewalsMessage': coreshop_subscription
+            'CoreShop\Bundle\SubscriptionBundle\Messenger\ProcessRenewalMessage': coreshop_subscription
+            'CoreShop\Bundle\SubscriptionBundle\Messenger\ActivateTrialMessage': coreshop_subscription
+            'CoreShop\Bundle\SubscriptionBundle\Messenger\ExpireSubscriptionMessage': coreshop_subscription

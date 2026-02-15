@@ -1,0 +1,31 @@
+services:
+    _defaults:
+        public: false
+
+    CoreShop\Bundle\SubscriptionBundle\Messenger\Handler\ScheduleRenewalsHandler:
+        arguments:
+            - '@coreshop.repository.subscription'
+            - '@Symfony\Component\Messenger\MessageBusInterface'
+        tags:
+            - { name: messenger.message_handler, bus: coreshop.bus }
+
+    CoreShop\Bundle\SubscriptionBundle\Messenger\Handler\ProcessRenewalHandler:
+        arguments:
+            - '@coreshop.repository.subscription'
+            - '@CoreShop\Component\Subscription\Processor\RenewalProcessorInterface'
+        tags:
+            - { name: messenger.message_handler, bus: coreshop.bus }
+
+    CoreShop\Bundle\SubscriptionBundle\Messenger\Handler\ActivateTrialHandler:
+        arguments:
+            - '@coreshop.repository.subscription'
+            - '@Symfony\Component\Workflow\Registry'
+        tags:
+            - { name: messenger.message_handler, bus: coreshop.bus }
+
+    CoreShop\Bundle\SubscriptionBundle\Messenger\Handler\ExpireSubscriptionHandler:
+        arguments:
+            - '@coreshop.repository.subscription'
+            - '@Symfony\Component\Workflow\Registry'
+        tags:
+            - { name: messenger.message_handler, bus: coreshop.bus }

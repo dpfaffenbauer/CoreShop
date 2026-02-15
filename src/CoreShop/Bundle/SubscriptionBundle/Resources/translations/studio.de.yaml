@@ -1,0 +1,43 @@
+coreshop:
+  subscription:
+    label: 'Abonnements'
+    plan:
+      label: 'Abo-Pläne'
+      name: 'Name'
+      description: 'Beschreibung'
+      billing_cycle: 'Abrechnungszyklus'
+      billing_interval: 'Abrechnungsintervall'
+      price: 'Preis pro Zyklus'
+      trial_period_days: 'Testphase (Tage)'
+      max_cycles: 'Max. Zyklen'
+      auto_renew: 'Automatische Verlängerung'
+      active: 'Aktiv'
+    subscription:
+      label: 'Aktive Abonnements'
+      plan: 'Plan'
+      customer: 'Kunde'
+      state: 'Status'
+      start_date: 'Startdatum'
+      next_billing_date: 'Nächste Abrechnung'
+      end_date: 'Enddatum'
+      trial_end_date: 'Testphase Ende'
+      completed_cycles: 'Abgeschlossene Zyklen'
+      cancellation_date: 'Kündigungsdatum'
+      cancellation_reason: 'Kündigungsgrund'
+    state:
+      trial: 'Testphase'
+      active: 'Aktiv'
+      paused: 'Pausiert'
+      past_due: 'Überfällig'
+      cancelled: 'Gekündigt'
+      expired: 'Abgelaufen'
+      completed: 'Abgeschlossen'
+    action:
+      pause: 'Pausieren'
+      resume: 'Fortsetzen'
+      cancel: 'Kündigen'
+    billing_cycle:
+      weekly: 'Wöchentlich'
+      monthly: 'Monatlich'
+      quarterly: 'Vierteljährlich'
+      yearly: 'Jährlich'

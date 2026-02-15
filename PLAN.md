@@ -13,7 +13,7 @@ Bei jeder Verlangerung wird eine neue Order mit dem SubscriptionPlan als Purchas
 - Normaler Cart → Checkout → Payment Flow fur Erst-Kauf und Verlangerungen
 - Flexible Abrechnungszyklen (wochentlich, monatlich, quartal, jahrlich)
 - Testphasen (Trial Periods)
-- Automatische Verlangerung: Cron erstellt neue Order + Payment
+- **Symfony Messenger** fur async Renewal-Processing (Cron als Fallback)
 - Pausieren / Fortsetzen / Kundigen von Abos
 - Rule Engine fur Abo-spezifische Rabatte
 
@@ -66,8 +66,18 @@ Bundle/SubscriptionBundle/
 │   ├── SubscriptionPlanController.php       # Admin CRUD
 │   └── SubscriptionController.php           # Admin: State-Aktionen
 ├── Command/
-│   ├── ProcessRenewalsCommand.php           # coreshop:subscription:process-renewals
-│   └── ExpireSubscriptionsCommand.php       # coreshop:subscription:expire
+│   ├── ProcessRenewalsCommand.php           # Fallback-Cron: coreshop:subscription:process-renewals
+│   └── ExpireSubscriptionsCommand.php       # Fallback-Cron: coreshop:subscription:expire
+├── Messenger/
+│   ├── ScheduleRenewalsMessage.php          # "Prufe fallige Abos" (dispatched by Scheduler)
+│   ├── ProcessRenewalMessage.php            # "Verlangere Abo X" (ein Abo pro Message)
+│   ├── ActivateTrialMessage.php             # "Trial beendet, aktiviere Abo X"
+│   ├── ExpireSubscriptionMessage.php        # "Expire Abo X (past_due zu lange)"
+│   └── Handler/
+│       ├── ScheduleRenewalsHandler.php      # Findet fallige Abos, dispatched ProcessRenewalMessage pro Abo
+│       ├── ProcessRenewalHandler.php        # Erstellt Order fur ein Abo
+│       ├── ActivateTrialHandler.php         # Trial → Active Transition
+│       └── ExpireSubscriptionHandler.php    # Past_due → Expired Transition
 ├── Calculator/
 │   ├── SubscriptionPlanPriceCalculator.php
 │   ├── SubscriptionPlanRetailPriceCalculator.php
@@ -310,39 +320,226 @@ Kunde:
         - orders = [Order]
 ```
 
-### 4.3 Renewal Flow (Verlangerung)
+### 4.3 Renewal Flow (Verlangerung via Messenger)
+
+**Primarer Weg: Symfony Messenger (async, event-driven)**
 
 ```
-Cron (ProcessRenewalsCommand):
-  1. Finde Subscriptions: nextBillingDate <= now() AND state = active
+Scheduler (Symfony Scheduler oder Pimcore Maintenance):
+  │
+  │ Dispatcht periodisch (z.B. alle 15 Min):
+  ▼
+ScheduleRenewalsMessage
+  │
+  ▼
+ScheduleRenewalsHandler:
+  │ 1. SELECT * FROM subscriptions WHERE nextBillingDate <= NOW() AND state = 'active'
+  │ 2. Fur JEDES fallige Abo:
+  │    → dispatch ProcessRenewalMessage(subscriptionId)
+  │
+  ▼ (eine Message pro Abo - parallel verarbeitbar)
+ProcessRenewalMessage(subscriptionId=42)
+  │
+  ▼
+ProcessRenewalHandler:
+  │
+  ├── EligibilityChecker pruft:
+  │   ├── maxCycles nicht erreicht?
+  │   ├── Kunde aktiv?
+  │   └── SubscriptionPlan noch aktiv?
+  │
+  ├── SubscriptionOrderCreator:
+  │   ├── Erstellt neuen Cart
+  │   ├── Fugt SubscriptionPlan als Purchasable hinzu (Menge: 1)
+  │   ├── Setzt Customer, Store, Currency, PaymentProvider aus Subscription
+  │   ├── Setzt 'subscription' im Cart-Context (fur Cycle-Rabatte)
+  │   ├── Konvertiert Cart → Order (normaler Proposal-to-Order Flow)
+  │   └── → Order hat eigene Payments via coreshop_payment
+  │
+  ├── Aktualisiert Subscription:
+  │   ├── completedCycles++
+  │   ├── lastPaymentDate = now()
+  │   ├── nextBillingDate = NextBillingDateResolver.resolve()
+  │   └── orders[] += neue Order
+  │
+  ├── Wenn maxCycles erreicht: Transition → "completed"
+  │
+  └── Dispatcht Event: coreshop.subscription.post_renewal
+```
 
-  2. Fur jede Subscription:
-     a) EligibilityChecker pruft:
-        - maxCycles nicht erreicht?
-        - Kunde aktiv?
-        - SubscriptionPlan noch aktiv?
+**Fallback: Cron-Command**
 
-     b) SubscriptionOrderCreator:
-        - Erstellt neuen Cart
-        - Fugt SubscriptionPlan als Purchasable hinzu (Menge: 1)
-        - Setzt Customer, Store, Currency, PaymentProvider
-        - Konvertiert Cart → Order (normaler Proposal-to-Order Flow)
-        → Die neue Order hat eigene Payments
-        → Payment kann direkt als "completed" markiert werden
-          (bei gespeichertem Payment-Token) oder wartet auf manuelle Zahlung
+Falls Messenger-Worker nicht lauft oder Messages verloren gehen:
 
-     c) Aktualisiert Subscription:
-        - completedCycles++
-        - lastPaymentDate = now()
-        - nextBillingDate = NextBillingDateResolver.resolve()
-        - orders[] += neue Order
+```bash
+# Fallback-Cron (taeglich, fangt verpasste Renewals auf)
+bin/console coreshop:subscription:process-renewals
 
-     d) Wenn maxCycles erreicht: Transition → "completed"
+# Pruft: Gibt es Subscriptions mit nextBillingDate < now() - 1h UND state = active?
+# → Dispatcht ProcessRenewalMessage fur jedes verpasste Abo
+# → Gleiche Handler-Logik, keine Duplizierung
+```
+
+**Vorteile Messenger gegenuber reinem Cron:**
+- Ein Abo pro Message → Fehler in Abo A blockiert nicht Abo B
+- Automatische Retries mit Backoff bei Fehlern
+- Parallelisierbar (mehrere Worker)
+- Failed Messages uber CoreShop Admin UI sichtbar (MessengerBundle)
+- Feingranulares Monitoring uber Mercure
+
+---
+
+## 5. Messenger-Konfiguration
+
+### 5.1 Transport (messenger.yml)
+
+Folgt dem bestehenden CoreShop-Pattern (analog NotificationBundle, IndexBundle):
+
+```yaml
+# SubscriptionBundle/Resources/config/pimcore/messenger.yml
+framework:
+  messenger:
+    transports:
+      coreshop_subscription:
+        dsn: "doctrine://default?queue_name=coreshop_subscription"
+        failure_transport: coreshop_subscription_failed
+        retry_strategy:
+          max_retries: 3
+          delay: 300000       # 5 Minuten
+          multiplier: 3       # 5min → 15min → 45min
+      coreshop_subscription_failed:
+        dsn: "doctrine://default?queue_name=coreshop_subscription_failed"
+        retry_strategy:
+          max_retries: 0
+
+    routing:
+      'CoreShop\Bundle\SubscriptionBundle\Messenger\ScheduleRenewalsMessage': coreshop_subscription
+      'CoreShop\Bundle\SubscriptionBundle\Messenger\ProcessRenewalMessage': coreshop_subscription
+      'CoreShop\Bundle\SubscriptionBundle\Messenger\ActivateTrialMessage': coreshop_subscription
+      'CoreShop\Bundle\SubscriptionBundle\Messenger\ExpireSubscriptionMessage': coreshop_subscription
+```
+
+### 5.2 Handler-Registrierung (services.yml)
+
+```yaml
+services:
+  CoreShop\Bundle\SubscriptionBundle\Messenger\Handler\ScheduleRenewalsHandler:
+    arguments:
+      - '@coreshop.repository.subscription'
+      - '@Symfony\Component\Messenger\MessageBusInterface'
+    tags:
+      - { name: messenger.message_handler, bus: coreshop.bus }
+
+  CoreShop\Bundle\SubscriptionBundle\Messenger\Handler\ProcessRenewalHandler:
+    arguments:
+      - '@coreshop.repository.subscription'
+      - '@CoreShop\Component\Subscription\Checker\EligibilityCheckerInterface'
+      - '@CoreShop\Component\Subscription\Processor\SubscriptionOrderCreatorInterface'
+      - '@CoreShop\Component\Subscription\Resolver\NextBillingDateResolverInterface'
+      - '@Symfony\Component\Workflow\Registry'
+      - '@Symfony\Contracts\EventDispatcher\EventDispatcherInterface'
+    tags:
+      - { name: messenger.message_handler, bus: coreshop.bus }
+```
+
+### 5.3 Message-Klassen
+
+```php
+// Leichtgewichtige Messages - nur IDs, keine Entities
+
+class ScheduleRenewalsMessage
+{
+    // Keine Daten - Handler sucht selbst nach falligen Abos
+}
+
+class ProcessRenewalMessage
+{
+    public function __construct(
+        public readonly int $subscriptionId,
+    ) {}
+}
+
+class ActivateTrialMessage
+{
+    public function __construct(
+        public readonly int $subscriptionId,
+    ) {}
+}
+
+class ExpireSubscriptionMessage
+{
+    public function __construct(
+        public readonly int $subscriptionId,
+        public readonly string $reason = 'payment_failed_max_retries',
+    ) {}
+}
+```
+
+### 5.4 Scheduling (wann werden Messages dispatcht?)
+
+**Option A: Symfony Scheduler (bevorzugt)**
+
+```php
+// SubscriptionScheduleProvider (implements ScheduleProviderInterface)
+public function getSchedule(): Schedule
+{
+    return (new Schedule())
+        ->add(
+            RecurringMessage::every('15 minutes', new ScheduleRenewalsMessage())
+        )
+        ->add(
+            RecurringMessage::every('1 hour', new ScheduleTrialActivationsMessage())
+        );
+}
+```
+
+**Option B: Pimcore Maintenance Task (Fallback)**
+
+```php
+// SubscriptionMaintenanceTask (implements TaskInterface)
+public function execute(): void
+{
+    $this->messageBus->dispatch(new ScheduleRenewalsMessage());
+}
+```
+
+**Option C: Cron als letzter Fallback**
+
+```bash
+# crontab
+*/15 * * * * bin/console coreshop:subscription:process-renewals
+0 * * * *   bin/console coreshop:subscription:expire
+```
+
+### 5.5 Idempotenz
+
+Alle Handler sind **idempotent** - doppelte Verarbeitung ist sicher:
+
+```php
+class ProcessRenewalHandler
+{
+    public function __invoke(ProcessRenewalMessage $message): void
+    {
+        $subscription = $this->repository->find($message->subscriptionId);
+
+        // Guard: Bereits verarbeitet?
+        if ($subscription->getNextBillingDate() > new \DateTime()) {
+            return; // Schon erneuert, nichts tun
+        }
+
+        // Guard: Falscher State?
+        if ($subscription->getState() !== SubscriptionStates::STATE_ACTIVE) {
+            return;
+        }
+
+        // ... Renewal durchfuhren
+    }
+}
 ```
 
 ---
 
-## 5. State Machine (Workflow)
+## 6. State Machine (Workflow)
 
 ### 5.1 Subscription Workflow (`coreshop_subscription`)
 
@@ -414,7 +611,7 @@ callbacks:
 
 ---
 
-## 6. Studio UI (React/TypeScript)
+## 7. Studio UI (React/TypeScript)
 
 ### 6.1 Dateistruktur
 
@@ -496,7 +693,7 @@ CoreShop Menu
 
 ---
 
-## 7. Rule Engine (Subscription Rules)
+## 8. Rule Engine (Subscription Rules)
 
 ### 7.1 Wie Regeln angewendet werden
 
@@ -561,7 +758,7 @@ class SubscriptionPlanDiscountPriceCalculator implements PurchasableDiscountPric
 
 ---
 
-## 8. Dependencies (composer.json)
+## 9. Dependencies (composer.json)
 
 ### Component (`coreshop/subscription`)
 
@@ -603,7 +800,7 @@ class SubscriptionPlanDiscountPriceCalculator implements PurchasableDiscountPric
 
 ---
 
-## 9. CoreBundle Integration
+## 10. CoreBundle Integration
 
 CoreBundle verbindet SubscriptionBundle mit dem Rest des Systems:
 
@@ -647,7 +844,7 @@ CoreBundle/Resources/assets/pimcore-studio/src/modules/
 
 ---
 
-## 10. Events
+## 11. Events
 
 | Event | Wann | Daten |
 |-------|------|-------|
@@ -665,7 +862,7 @@ CoreBundle/Resources/assets/pimcore-studio/src/modules/
 
 ---
 
-## 11. Implementierungsreihenfolge
+## 12. Implementierungsreihenfolge
 
 ### Phase 1: Foundation
 1. Component erstellen (Interfaces, Models, States, BillingCycle Enum)
@@ -685,31 +882,32 @@ CoreBundle/Resources/assets/pimcore-studio/src/modules/
 11. NextBillingDateResolver
 12. EligibilityChecker
 
-### Phase 4: Renewal-System
-13. SubscriptionOrderCreator (erstellt Cart + Order aus Subscription)
-14. RenewalProcessor (orchestriert den Renewal-Flow)
-15. ProcessRenewalsCommand (Cron)
-16. ExpireSubscriptionsCommand (Cron)
+### Phase 4: Messenger + Renewal-System
+13. Messenger Messages (ScheduleRenewals, ProcessRenewal, ActivateTrial, Expire)
+14. Messenger Handlers + Transport-Config (messenger.yml)
+15. SubscriptionOrderCreator (erstellt Cart + Order aus Subscription)
+16. RenewalProcessor (orchestriert den Renewal-Flow)
+17. Cron-Commands als Fallback (ProcessRenewals, Expire)
 
 ### Phase 5: Rule Engine
-17. SubscriptionRule Model
-18. Conditions (cycleCount, subscriptionAge, nested)
-19. Actions (discountPercent, discountAmount)
-20. Integration in Price Calculators
+18. SubscriptionRule Model
+19. Conditions (cycleCount, subscriptionAge, nested)
+20. Actions (discountPercent, discountAmount)
+21. Integration in Price Calculators
 
 ### Phase 6: Studio UI
-21. SubscriptionPlan Admin (Liste + Detail)
-22. Subscription Admin (Liste + Detail + State Actions)
-23. Rule Engine UI
-24. Dynamic Types + Select Components
+22. SubscriptionPlan Admin (Liste + Detail)
+23. Subscription Admin (Liste + Detail + State Actions)
+24. Rule Engine UI
+25. Dynamic Types + Select Components
 
 ### Phase 7: CoreBundle Integration
-25. Cross-Bundle Rule Conditions
-26. Tax Integration
-27. Notification Rules
-28. Customer/Order View Extensions
+26. Cross-Bundle Rule Conditions
+27. Tax Integration
+28. Notification Rules
+29. Customer/Order View Extensions
 
 ### Phase 8: Dokumentation
-29. Architecture Docs (`docs/03_Development/`)
-30. Configuration Guide
-31. API Reference
+30. Architecture Docs (`docs/03_Development/`)
+31. Configuration Guide
+32. API Reference

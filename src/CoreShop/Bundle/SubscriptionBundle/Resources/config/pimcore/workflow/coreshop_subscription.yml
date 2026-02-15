@@ -1,0 +1,87 @@
+pimcore:
+    workflows:
+        coreshop_subscription:
+            type: state_machine
+            marking_store:
+                type: state_table
+            audit_trail:
+                enabled: true
+            supports:
+                - CoreShop\Component\Subscription\Model\SubscriptionInterface
+            places:
+                trial:
+                    label: 'Trial'
+                    color: '#3498db'
+                    permissions:
+                        - { condition: is_fully_authenticated() }
+                active:
+                    label: 'Active'
+                    color: '#2ecc71'
+                    permissions:
+                        - { condition: is_fully_authenticated() }
+                paused:
+                    label: 'Paused'
+                    color: '#f39c12'
+                    permissions:
+                        - { condition: is_fully_authenticated() }
+                past_due:
+                    label: 'Past Due'
+                    color: '#e74c3c'
+                    permissions:
+                        - { condition: is_fully_authenticated() }
+                cancelled:
+                    label: 'Cancelled'
+                    color: '#95a5a6'
+                    permissions:
+                        - { condition: is_fully_authenticated() }
+                expired:
+                    label: 'Expired'
+                    color: '#7f8c8d'
+                    permissions:
+                        - { condition: is_fully_authenticated() }
+                completed:
+                    label: 'Completed'
+                    color: '#27ae60'
+                    permissions:
+                        - { condition: is_fully_authenticated() }
+            transitions:
+                activate:
+                    from: [trial]
+                    to: active
+                    options:
+                        label: 'Activate'
+                pause:
+                    from: [active]
+                    to: paused
+                    options:
+                        label: 'Pause'
+                resume:
+                    from: [paused]
+                    to: active
+                    options:
+                        label: 'Resume'
+                payment_failed:
+                    from: [active]
+                    to: past_due
+                    options:
+                        label: 'Payment Failed'
+                payment_recovered:
+                    from: [past_due]
+                    to: active
+                    options:
+                        label: 'Payment Recovered'
+                cancel:
+                    from: [active, paused, past_due, trial]
+                    to: cancelled
+                    options:
+                        label: 'Cancel'
+                expire:
+                    from: [past_due]
+                    to: expired
+                    options:
+                        label: 'Expire'
+                complete:
+                    from: [active]
+                    to: completed
+                    options:
+                        label: 'Complete'

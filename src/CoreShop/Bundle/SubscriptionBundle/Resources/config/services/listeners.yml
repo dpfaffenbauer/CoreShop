@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: false
+
+    CoreShop\Bundle\SubscriptionBundle\EventListener\OrderCompleteListener:
+        arguments:
+            - '@coreshop.factory.subscription'
+            - '@CoreShop\Component\Subscription\Resolver\NextBillingDateResolverInterface'
+        tags:
+            - { name: kernel.event_listener, event: workflow.coreshop_order.completed.confirm, method: onOrderConfirm }

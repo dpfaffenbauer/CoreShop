@@ -1,0 +1,43 @@
+coreshop:
+  subscription:
+    label: 'Subscriptions'
+    plan:
+      label: 'Subscription Plans'
+      name: 'Name'
+      description: 'Description'
+      billing_cycle: 'Billing Cycle'
+      billing_interval: 'Billing Interval'
+      price: 'Price per Cycle'
+      trial_period_days: 'Trial Period (Days)'
+      max_cycles: 'Max Cycles'
+      auto_renew: 'Auto Renew'
+      active: 'Active'
+    subscription:
+      label: 'Active Subscriptions'
+      plan: 'Plan'
+      customer: 'Customer'
+      state: 'State'
+      start_date: 'Start Date'
+      next_billing_date: 'Next Billing'
+      end_date: 'End Date'
+      trial_end_date: 'Trial End'
+      completed_cycles: 'Completed Cycles'
+      cancellation_date: 'Cancellation Date'
+      cancellation_reason: 'Cancellation Reason'
+    state:
+      trial: 'Trial'
+      active: 'Active'
+      paused: 'Paused'
+      past_due: 'Past Due'
+      cancelled: 'Cancelled'
+      expired: 'Expired'
+      completed: 'Completed'
+    action:
+      pause: 'Pause'
+      resume: 'Resume'
+      cancel: 'Cancel'
+    billing_cycle:
+      weekly: 'Weekly'
+      monthly: 'Monthly'
+      quarterly: 'Quarterly'
+      yearly: 'Yearly'

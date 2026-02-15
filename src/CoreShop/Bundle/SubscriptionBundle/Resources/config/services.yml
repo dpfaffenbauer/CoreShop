@@ -1,0 +1,6 @@
+imports:
+    - { resource: 'services/purchasable.yml' }
+    - { resource: 'services/processors.yml' }
+    - { resource: 'services/listeners.yml' }
+    - { resource: 'services/messenger.yml' }
+    - { resource: 'services/commands.yml' }

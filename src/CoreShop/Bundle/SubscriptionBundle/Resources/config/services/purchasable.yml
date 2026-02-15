@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        public: false
+
+    CoreShop\Bundle\SubscriptionBundle\Calculator\SubscriptionPlanPriceCalculator:
+        tags:
+            - { name: coreshop.order.purchasable.price_calculator, type: coreshop_subscription_plan, priority: 20 }
+
+    CoreShop\Bundle\SubscriptionBundle\Calculator\SubscriptionPlanRetailPriceCalculator:
+        tags:
+            - { name: coreshop.order.purchasable.retail_price_calculator, type: coreshop_subscription_plan, priority: 20 }
+
+    CoreShop\Bundle\SubscriptionBundle\Calculator\SubscriptionPlanDiscountPriceCalculator:
+        tags:
+            - { name: coreshop.order.purchasable.discount_price_calculator, type: coreshop_subscription_plan, priority: 20 }
+
+    CoreShop\Bundle\SubscriptionBundle\Calculator\SubscriptionPlanDiscountCalculator:
+        tags:
+            - { name: coreshop.order.purchasable.discount_calculator, type: coreshop_subscription_plan, priority: 20 }
