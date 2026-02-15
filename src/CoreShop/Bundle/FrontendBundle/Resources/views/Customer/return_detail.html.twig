@@ -1,0 +1,92 @@
+{% import "@CoreShopFrontend/Common/Macro/currency.html.twig" as currency %}
+{% extends '@CoreShopFrontend/layout-full.html.twig' %}
+
+{% block center %}
+    <div id="main-container" class="container p-0">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_index') }}">{{ 'coreshop.ui.home'|trans }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_customer_profile') }}">{{ 'coreshop.ui.profile'|trans }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_customer_returns') }}">{{ 'coreshop.ui.returns'|trans }}</a></li>
+                <li class="breadcrumb-item active">{{ 'coreshop.ui.return'|trans }} {{ orderReturn.returnNumber }}</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            {% include '@CoreShopFrontend/Customer/_sidebar.html.twig' %}
+
+            <div class="col-12 col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">{{ 'coreshop.ui.return'|trans }} {{ orderReturn.returnNumber }}</h3>
+                    <span class="badge fs-6" style="background-color: {{ stateInfo.color ?? '#6c757d' }}">
+                        {{ stateInfo.label ?? orderReturn.state }}
+                    </span>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>{{ 'coreshop.ui.return_date'|trans }}:</strong><br>
+                                {{ orderReturn.returnDate|date("d.m.Y") }}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>{{ 'coreshop.ui.order'|trans }}:</strong><br>
+                                {% if is_granted('CORESHOP_CUSTOMER_PROFILE_ORDER_DETAIL') %}
+                                    <a href="{{ path('coreshop_customer_order_detail', {order: order.id}) }}">
+                                        {{ order.orderNumber }}
+                                    </a>
+                                {% else %}
+                                    {{ order.orderNumber }}
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <strong>{{ 'coreshop.ui.state'|trans }}:</strong><br>
+                                <span class="badge" style="background-color: {{ stateInfo.color ?? '#6c757d' }}">
+                                    {{ stateInfo.label ?? orderReturn.state }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>{{ 'coreshop.ui.returned_items'|trans }}</h4>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>{{ 'coreshop.ui.item'|trans }}</th>
+                        <th>{{ 'coreshop.ui.quantity'|trans }}</th>
+                        <th class="text-end">{{ 'coreshop.ui.total'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in orderReturn.items %}
+                        <tr>
+                            <td class="align-middle">
+                                {% if item.orderItem is defined and item.orderItem %}
+                                    {{ item.orderItem.name ?? ('# ' ~ item.orderItem.id) }}
+                                {% else %}
+                                    #{{ item.id }}
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">{{ item.quantity }}</td>
+                            <td class="align-middle text-end">
+                                {{ currency.format(item.totalGross, order.currency.isoCode) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="mt-3">
+                    <a href="{{ path('coreshop_customer_returns') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        {{ 'coreshop.ui.back_to_returns'|trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

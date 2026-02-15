@@ -44,6 +44,15 @@
             {% include '@CoreShopFrontend/Checkout/steps/summary/_summary.html.twig' with {'cart': order} %}
         </div>
     </div>
+
+    {% if is_granted('CORESHOP_CUSTOMER_PROFILE_RETURN_CREATE') %}
+        <div class="mt-4 text-end">
+            <a href="{{ path('coreshop_customer_return_create', {order: order.id}) }}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-return-left me-1"></i>
+                {{ 'coreshop.ui.request_return'|trans }}
+            </a>
+        </div>
+    {% endif %}
 {% else %}
     <p>{{ 'coreshop.ui.order_empty'|trans }}</p>
 {% endif %}

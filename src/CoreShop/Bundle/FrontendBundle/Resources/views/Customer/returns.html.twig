@@ -1,0 +1,70 @@
+{% extends '@CoreShopFrontend/layout-full.html.twig' %}
+
+{% block center %}
+    <div id="main-container" class="container p-0">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_index') }}">{{ 'coreshop.ui.home'|trans }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_customer_profile') }}">{{ 'coreshop.ui.profile'|trans }}</a></li>
+                <li class="breadcrumb-item active">{{ 'coreshop.ui.returns'|trans }}</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            {% include '@CoreShopFrontend/Customer/_sidebar.html.twig' %}
+
+            <div class="col-12 col-lg-9">
+                <h3>{{ 'coreshop.ui.returns'|trans }}</h3>
+
+                {% if returns|length > 0 %}
+                    <table class="mt-3 table">
+                        <thead>
+                        <tr>
+                            <th>{{ 'coreshop.ui.return_number'|trans }}</th>
+                            <th>{{ 'coreshop.ui.order_number'|trans }}</th>
+                            <th>{{ 'coreshop.ui.date'|trans }}</th>
+                            <th>{{ 'coreshop.ui.state'|trans }}</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for entry in returns %}
+                            <tr>
+                                <td class="align-middle">{{ entry.return.returnNumber }}</td>
+                                <td class="align-middle">
+                                    {% if is_granted('CORESHOP_CUSTOMER_PROFILE_ORDER_DETAIL') %}
+                                        <a href="{{ path('coreshop_customer_order_detail', {order: entry.order.id}) }}">
+                                            {{ entry.order.orderNumber }}
+                                        </a>
+                                    {% else %}
+                                        {{ entry.order.orderNumber }}
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle">{{ entry.return.returnDate|date("d.m.Y") }}</td>
+                                <td class="align-middle">
+                                    <span class="badge" style="background-color: {{ entry.stateInfo.color ?? '#6c757d' }}">
+                                        {{ entry.stateInfo.label ?? entry.return.state }}
+                                    </span>
+                                </td>
+                                <td class="align-middle text-end text-md-start">
+                                    {% if is_granted('CORESHOP_CUSTOMER_PROFILE_RETURN_DETAIL') %}
+                                        <a class="btn btn-link text-primary" href="{{ path('coreshop_customer_return_detail', {return: entry.return.id}) }}">
+                                            <i class="bi bi-arrow-up-right me-2"></i>
+                                            <span class="link-description text-body">{{ 'coreshop.ui.show_detail'|trans }}</span>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="alert alert-info mt-3">
+                        {{ 'coreshop.ui.no_returns'|trans }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

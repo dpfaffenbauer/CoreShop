@@ -282,6 +282,27 @@ routes:
     variables: _locale,item
     priority: 3
 
+  coreshop_customer_returns:
+    pattern: '/(\w+)\/shop\/customer\/returns$/'
+    reverse: '/%_locale/shop/customer/returns'
+    controller: 'CoreShop\Bundle\FrontendBundle\Controller\OrderReturnController::returnsAction'
+    variables: _locale
+    priority: 2
+
+  coreshop_customer_return_detail:
+    pattern: '/(\w+)\/shop\/customer\/return\/([0-9]+)$/'
+    reverse: '/%_locale/shop/customer/return/%return'
+    controller: 'CoreShop\Bundle\FrontendBundle\Controller\OrderReturnController::returnDetailAction'
+    variables: _locale,return
+    priority: 2
+
+  coreshop_customer_return_create:
+    pattern: '/(\w+)\/shop\/customer\/order\/([0-9]+)\/return$/'
+    reverse: '/%_locale/shop/customer/order/%order/return'
+    controller: 'CoreShop\Bundle\FrontendBundle\Controller\OrderReturnController::createReturnAction'
+    variables: _locale,order
+    priority: 3
+
   coreshop_cart_create_named:
     name: coreshop_cart_create_named
     pattern: '/(\w+)\/shop\/cart\/create$/'
