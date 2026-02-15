@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace CoreShop\Bundle\SubscriptionBundle\DependencyInjection;
 
+use CoreShop\Bundle\SubscriptionBundle\Controller\SubscriptionController;
 use CoreShop\Component\Subscription\Model\SubscriptionPlan;
 use CoreShop\Component\Subscription\Model\SubscriptionPlanInterface;
 use CoreShop\Component\Subscription\Model\Subscription;
@@ -91,6 +92,7 @@ final class Configuration implements ConfigurationInterface
                                         ->scalarNode('repository')->cannotBeEmpty()->end()
                                         ->scalarNode('install_file')->defaultValue('@CoreShopSubscriptionBundle/Resources/install/class-CoreShopSubscription.json')->end()
                                         ->scalarNode('type')->defaultValue(CoreShopSubscription::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('pimcore_controller')->defaultValue(SubscriptionController::class)->end()
                                     ->end()
                                 ->end()
                             ->end()

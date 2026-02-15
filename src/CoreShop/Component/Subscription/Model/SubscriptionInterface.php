@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace CoreShop\Component\Subscription\Model;
 
 use CoreShop\Component\Currency\Model\CurrencyAwareInterface;
+use CoreShop\Component\Customer\Model\CustomerInterface;
 use CoreShop\Component\Order\Model\OrderInterface;
 use CoreShop\Component\Resource\Model\TimestampableInterface;
 use CoreShop\Component\Resource\Pimcore\Model\PimcoreModelInterface;
@@ -29,6 +30,10 @@ interface SubscriptionInterface extends
     CurrencyAwareInterface,
     TimestampableInterface
 {
+    public function getCustomer(): ?CustomerInterface;
+
+    public function setCustomer(?CustomerInterface $customer);
+
     public function getSubscriptionPlan(): ?SubscriptionPlanInterface;
 
     public function setSubscriptionPlan(?SubscriptionPlanInterface $subscriptionPlan);

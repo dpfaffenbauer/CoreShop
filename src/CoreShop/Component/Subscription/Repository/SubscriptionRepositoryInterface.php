@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace CoreShop\Component\Subscription\Repository;
 
+use CoreShop\Component\Customer\Model\CustomerInterface;
 use CoreShop\Component\Resource\Repository\PimcoreRepositoryInterface;
 use CoreShop\Component\Subscription\Model\SubscriptionInterface;
 
@@ -41,4 +42,9 @@ interface SubscriptionRepositoryInterface extends PimcoreRepositoryInterface
      * @return SubscriptionInterface[]
      */
     public function findByState(string $state): array;
+
+    /**
+     * @return SubscriptionInterface[]
+     */
+    public function findByCustomer(CustomerInterface $customer): array;
 }

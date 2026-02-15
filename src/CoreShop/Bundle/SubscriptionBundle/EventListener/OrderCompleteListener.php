@@ -21,14 +21,12 @@ use CoreShop\Component\Order\Model\OrderInterface;
 use CoreShop\Component\Order\Model\OrderItemInterface;
 use CoreShop\Component\Subscription\Factory\SubscriptionFactoryInterface;
 use CoreShop\Component\Subscription\Model\SubscriptionPlanInterface;
-use CoreShop\Component\Subscription\Resolver\NextBillingDateResolverInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 
 final class OrderCompleteListener
 {
     public function __construct(
         private SubscriptionFactoryInterface $subscriptionFactory,
-        private NextBillingDateResolverInterface $nextBillingDateResolver,
     ) {
     }
 

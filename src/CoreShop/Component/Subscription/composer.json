@@ -25,6 +25,7 @@
         }
     ],
     "require": {
+        "coreshop/customer": "^5.0",
         "coreshop/order": "^5.0",
         "coreshop/resource": "^5.0",
         "coreshop/store": "^5.0",

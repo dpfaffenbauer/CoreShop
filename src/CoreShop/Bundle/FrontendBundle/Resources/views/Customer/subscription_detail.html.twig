@@ -1,0 +1,132 @@
+{% import "@CoreShopFrontend/Common/Macro/currency.html.twig" as currency %}
+{% extends '@CoreShopFrontend/layout-full.html.twig' %}
+
+{% block center %}
+    <div id="main-container" class="container p-0">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_index') }}">{{ 'coreshop.ui.home'|trans }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_customer_profile') }}">{{ 'coreshop.ui.profile'|trans }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_customer_subscriptions') }}">{{ 'coreshop.ui.subscriptions'|trans }}</a></li>
+                <li class="breadcrumb-item active">{{ 'coreshop.ui.subscription.detail'|trans }}</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            {% include '@CoreShopFrontend/Customer/_sidebar.html.twig' %}
+
+            <div class="col-12 col-lg-9">
+                <h3>{{ 'coreshop.ui.subscription.detail'|trans }}</h3>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">{{ subscription.subscriptionPlan ? subscription.subscriptionPlan.name : '-' }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <dl>
+                                    <dt>{{ 'coreshop.ui.state'|trans }}</dt>
+                                    <dd>
+                                        {% set state_class = 'bg-secondary' %}
+                                        {% if subscription.state == 'active' %}
+                                            {% set state_class = 'bg-success' %}
+                                        {% elseif subscription.state == 'trial' %}
+                                            {% set state_class = 'bg-info' %}
+                                        {% elseif subscription.state == 'paused' %}
+                                            {% set state_class = 'bg-warning' %}
+                                        {% elseif subscription.state == 'cancelled' %}
+                                            {% set state_class = 'bg-secondary' %}
+                                        {% elseif subscription.state == 'past_due' %}
+                                            {% set state_class = 'bg-danger' %}
+                                        {% elseif subscription.state == 'completed' %}
+                                            {% set state_class = 'bg-primary' %}
+                                        {% endif %}
+                                        <span class="badge {{ state_class }}">{{ ('coreshop.ui.subscription.state.' ~ subscription.state)|trans }}</span>
+                                    </dd>
+
+                                    <dt>{{ 'coreshop.ui.subscription.start_date'|trans }}</dt>
+                                    <dd>{{ subscription.startDate ? subscription.startDate|date("d.m.Y") : '-' }}</dd>
+
+                                    {% if subscription.trialEndDate %}
+                                        <dt>{{ 'coreshop.ui.subscription.trial_end_date'|trans }}</dt>
+                                        <dd>{{ subscription.trialEndDate|date("d.m.Y") }}</dd>
+                                    {% endif %}
+
+                                    <dt>{{ 'coreshop.ui.subscription.next_billing'|trans }}</dt>
+                                    <dd>{{ subscription.nextBillingDate ? subscription.nextBillingDate|date("d.m.Y") : '-' }}</dd>
+                                </dl>
+                            </div>
+                            <div class="col-md-6">
+                                <dl>
+                                    <dt>{{ 'coreshop.ui.subscription.cycles'|trans }}</dt>
+                                    <dd>
+                                        {{ subscription.completedCycles }}
+                                        {% if subscription.subscriptionPlan and subscription.subscriptionPlan.maxCycles %}
+                                            / {{ subscription.subscriptionPlan.maxCycles }}
+                                        {% endif %}
+                                    </dd>
+
+                                    {% if subscription.endDate %}
+                                        <dt>{{ 'coreshop.ui.subscription.end_date'|trans }}</dt>
+                                        <dd>{{ subscription.endDate|date("d.m.Y") }}</dd>
+                                    {% endif %}
+
+                                    {% if subscription.cancellationDate %}
+                                        <dt>{{ 'coreshop.ui.subscription.cancellation_date'|trans }}</dt>
+                                        <dd>{{ subscription.cancellationDate|date("d.m.Y") }}</dd>
+                                    {% endif %}
+
+                                    {% if subscription.cancellationReason %}
+                                        <dt>{{ 'coreshop.ui.subscription.cancellation_reason'|trans }}</dt>
+                                        <dd>{{ subscription.cancellationReason }}</dd>
+                                    {% endif %}
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="mt-4">{{ 'coreshop.ui.subscription.order_history'|trans }}</h4>
+                <table class="mt-3 table">
+                    <thead>
+                    <tr>
+                        <th>{{ 'coreshop.ui.order_number'|trans }}</th>
+                        <th>{{ 'coreshop.ui.date'|trans }}</th>
+                        <th>{{ 'coreshop.ui.total'|trans }}</th>
+                        <th>{{ 'coreshop.ui.state'|trans }}</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for order in subscription.orders %}
+                        <tr>
+                            <td class="align-middle">{{ order.orderNumber }}</td>
+                            <td class="align-middle">{{ order.orderDate ? order.orderDate|date("d.m.Y") : '-' }}</td>
+                            <td class="align-middle">{{ currency.format(order.convertedTotal, order.currency.isoCode) }}</td>
+                            <td class="align-middle"><span class="badge bg-success">{{ order|coreshop_order_state.calculatedState }}</span></td>
+                            <td class="align-middle text-end text-md-start">
+                                {% if is_granted('CORESHOP_CUSTOMER_PROFILE_ORDER_DETAIL') %}
+                                    <a class="btn btn-link text-primary" href="{{ path('coreshop_customer_order_detail', {order: order.id}) }}">
+                                        <i class="bi bi-arrow-up-right me-2"></i>
+                                        <span class="link-description text-body">{{ 'coreshop.ui.show_detail'|trans }}</span>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">{{ 'coreshop.ui.subscription.no_orders'|trans }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <a href="{{ path('coreshop_customer_subscriptions') }}" class="btn btn-secondary mt-3">
+                    <i class="bi bi-arrow-left me-2"></i>{{ 'coreshop.ui.subscription.back_to_list'|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

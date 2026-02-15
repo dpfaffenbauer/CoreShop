@@ -1,0 +1,71 @@
+{% extends '@CoreShopFrontend/layout-full.html.twig' %}
+
+{% block center %}
+    <div id="main-container" class="container p-0">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_index') }}">{{ 'coreshop.ui.home'|trans }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('coreshop_customer_profile') }}">{{ 'coreshop.ui.profile'|trans }}</a></li>
+                <li class="breadcrumb-item active">{{ 'coreshop.ui.subscriptions'|trans }}</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            {% include '@CoreShopFrontend/Customer/_sidebar.html.twig' %}
+
+            <div class="col-12 col-lg-9">
+                <h3>{{ 'coreshop.ui.subscriptions'|trans }}</h3>
+                <table class="mt-3 table">
+                    <thead>
+                    <tr>
+                        <th>{{ 'coreshop.ui.subscription.plan'|trans }}</th>
+                        <th>{{ 'coreshop.ui.state'|trans }}</th>
+                        <th>{{ 'coreshop.ui.subscription.start_date'|trans }}</th>
+                        <th>{{ 'coreshop.ui.subscription.next_billing'|trans }}</th>
+                        <th>{{ 'coreshop.ui.subscription.cycles'|trans }}</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for subscription in subscriptions %}
+                        <tr>
+                            <td class="align-middle">{{ subscription.subscriptionPlan ? subscription.subscriptionPlan.name : '-' }}</td>
+                            <td class="align-middle">
+                                {% set state_class = 'bg-secondary' %}
+                                {% if subscription.state == 'active' %}
+                                    {% set state_class = 'bg-success' %}
+                                {% elseif subscription.state == 'trial' %}
+                                    {% set state_class = 'bg-info' %}
+                                {% elseif subscription.state == 'paused' %}
+                                    {% set state_class = 'bg-warning' %}
+                                {% elseif subscription.state == 'cancelled' %}
+                                    {% set state_class = 'bg-secondary' %}
+                                {% elseif subscription.state == 'past_due' %}
+                                    {% set state_class = 'bg-danger' %}
+                                {% elseif subscription.state == 'completed' %}
+                                    {% set state_class = 'bg-primary' %}
+                                {% endif %}
+                                <span class="badge {{ state_class }}">{{ ('coreshop.ui.subscription.state.' ~ subscription.state)|trans }}</span>
+                            </td>
+                            <td class="align-middle">{{ subscription.startDate ? subscription.startDate|date("d.m.Y") : '-' }}</td>
+                            <td class="align-middle">{{ subscription.nextBillingDate ? subscription.nextBillingDate|date("d.m.Y") : '-' }}</td>
+                            <td class="align-middle">{{ subscription.completedCycles }}</td>
+                            <td class="align-middle text-end text-md-start">
+                                <a class="btn btn-link text-primary" href="{{ path('coreshop_customer_subscription_detail', {subscription: subscription.id}) }}">
+                                    <i class="bi bi-arrow-up-right me-2"></i>
+                                    <span class="link-description text-body">{{ 'coreshop.ui.show_detail'|trans }}</span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">{{ 'coreshop.ui.subscription.no_subscriptions'|trans }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

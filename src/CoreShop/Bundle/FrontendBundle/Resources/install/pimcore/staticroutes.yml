@@ -184,6 +184,20 @@ routes:
     variables: _locale,order
     priority: 2
 
+  coreshop_customer_subscriptions:
+    pattern: '/(\w+)\/shop\/customer\/subscriptions$/'
+    reverse: '/%_locale/shop/customer/subscriptions'
+    controller: 'CoreShop\Bundle\FrontendBundle\Controller\CustomerController::subscriptionsAction'
+    variables: _locale
+    priority: 2
+
+  coreshop_customer_subscription_detail:
+    pattern: '/(\w+)\/shop\/customer\/subscription\/([0-9]+)$/'
+    reverse: '/%_locale/shop/customer/subscription/%subscription'
+    controller: 'CoreShop\Bundle\FrontendBundle\Controller\CustomerController::subscriptionDetailAction'
+    variables: _locale,subscription
+    priority: 2
+
   coreshop_customer_addresses:
     pattern: '/(\w+)\/shop\/customer\/addresses$/'
     reverse: '/%_locale/shop/customer/addresses'

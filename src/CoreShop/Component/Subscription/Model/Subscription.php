@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace CoreShop\Component\Subscription\Model;
 
 use CoreShop\Component\Currency\Model\CurrencyAwareTrait;
+use CoreShop\Component\Customer\Model\CustomerInterface;
 use CoreShop\Component\Order\Model\OrderInterface;
 use CoreShop\Component\Resource\Exception\ImplementedByPimcoreException;
 use CoreShop\Component\Resource\Pimcore\Model\AbstractPimcoreModel;
@@ -27,6 +28,16 @@ abstract class Subscription extends AbstractPimcoreModel implements Subscription
 {
     use StoreAwareTrait;
     use CurrencyAwareTrait;
+
+    public function getCustomer(): ?CustomerInterface
+    {
+        throw new ImplementedByPimcoreException(__CLASS__, __METHOD__);
+    }
+
+    public function setCustomer(?CustomerInterface $customer)
+    {
+        throw new ImplementedByPimcoreException(__CLASS__, __METHOD__);
+    }
 
     public function getSubscriptionPlan(): ?SubscriptionPlanInterface
     {

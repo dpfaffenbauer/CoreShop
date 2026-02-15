@@ -1,0 +1,9 @@
+coreshop_admin_subscription_get_folder_configuration:
+    path: /%coreshop.admin.route.base%/subscription/get-folder-configuration
+    requirements:
+      backend: '%coreshop.admin.route.backend_requirement%'
+    defaults:
+      backend: admin
+      _controller: 'coreshop.pimcore_controller.subscription::getFolderConfigurationAction'
+    options:
+        expose: true

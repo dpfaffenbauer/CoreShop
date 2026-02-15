@@ -255,6 +255,17 @@ class MainMenuBuilder implements MenuBuilderInterface
             ->setExtra('order', 60)
         ;
 
+        $ordersMenu
+            ->addChild('coreshop_subscriptions')
+            ->setLabel('coreshop_subscriptions')
+            ->setAttribute('permission', 'coreshop_permission_subscription')
+            ->setAttribute('iconCls', 'coreshop_nav_icon_subscription')
+            ->setAttribute('resource', 'coreshop.subscription')
+            ->setAttribute('function', 'subscriptions')
+            ->setAttribute('widgetId', 'coreshop-subscription-manager')
+            ->setExtra('order', 70)
+        ;
+
         $carriersMenu = $menuItem
             ->addChild('coreshop_shipping')
             ->setLabel('coreshop_shipping')

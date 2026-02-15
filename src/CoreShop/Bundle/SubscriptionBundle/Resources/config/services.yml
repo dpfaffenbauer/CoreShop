@@ -1,4 +1,5 @@
 imports:
+    - { resource: 'services/factory.yml' }
     - { resource: 'services/purchasable.yml' }
     - { resource: 'services/processors.yml' }
     - { resource: 'services/listeners.yml' }

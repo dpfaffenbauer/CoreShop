@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        public: false
+
+    CoreShop\Component\Subscription\Factory\SubscriptionFactoryInterface: '@CoreShop\Bundle\SubscriptionBundle\Factory\SubscriptionFactory'
+    CoreShop\Bundle\SubscriptionBundle\Factory\SubscriptionFactory:
+        decorates: 'coreshop.factory.subscription'
+        arguments:
+            - '@.inner'
+            - '@CoreShop\Component\Pimcore\DataObject\ObjectServiceInterface'
+            - '@CoreShop\Component\Subscription\Resolver\NextBillingDateResolverInterface'

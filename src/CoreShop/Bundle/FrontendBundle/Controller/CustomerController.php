@@ -33,6 +33,8 @@ use CoreShop\Component\Order\Repository\OrderRepositoryInterface;
 use CoreShop\Component\Pimcore\DataObject\VersionHelper;
 use CoreShop\Component\Resource\Factory\FactoryInterface;
 use CoreShop\Component\Resource\Repository\RepositoryInterface;
+use CoreShop\Component\Subscription\Model\SubscriptionInterface;
+use CoreShop\Component\Subscription\Repository\SubscriptionRepositoryInterface;
 use CoreShop\Component\User\Model\UserInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -310,6 +312,49 @@ class CustomerController extends FrontendController
         ]);
     }
 
+    public function subscriptionsAction(): Response
+    {
+        $this->denyAccessUnlessGranted('CORESHOP_CUSTOMER_PROFILE_SUBSCRIPTIONS');
+
+        $customer = $this->getCustomer();
+
+        if (!$customer instanceof CustomerInterface) {
+            return $this->redirectToRoute('coreshop_index');
+        }
+
+        return $this->render($this->getTemplateConfigurator()->findTemplate('Customer/subscriptions.html'), [
+            'customer' => $customer,
+            'subscriptions' => $this->container->get('coreshop.repository.subscription')->findByCustomer($customer),
+        ]);
+    }
+
+    public function subscriptionDetailAction(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('CORESHOP_CUSTOMER_PROFILE_SUBSCRIPTIONS');
+
+        $subscriptionId = $this->getParameterFromRequest($request, 'subscription');
+        $customer = $this->getCustomer();
+
+        if (!$customer instanceof CustomerInterface) {
+            return $this->redirectToRoute('coreshop_index');
+        }
+
+        $subscription = $this->container->get('coreshop.repository.subscription')->find($subscriptionId);
+
+        if (!$subscription instanceof SubscriptionInterface) {
+            return $this->redirectToRoute('coreshop_customer_subscriptions');
+        }
+
+        if (!$subscription->getCustomer() instanceof CustomerInterface || $subscription->getCustomer()->getId() !== $customer->getId()) {
+            return $this->redirectToRoute('coreshop_customer_subscriptions');
+        }
+
+        return $this->render($this->getTemplateConfigurator()->findTemplate('Customer/subscription_detail.html'), [
+            'customer' => $customer,
+            'subscription' => $subscription,
+        ]);
+    }
+
     public function confirmNewsletterAction(Request $request): Response
     {
         $success = false;
@@ -369,6 +414,7 @@ class CustomerController extends FrontendController
                 ShopperContextInterface::class,
                 AddressAssignmentManagerInterface::class,
                 new SubscribedService('coreshop.repository.order', OrderRepositoryInterface::class),
+                new SubscribedService('coreshop.repository.subscription', SubscriptionRepositoryInterface::class),
                 new SubscribedService('coreshop.repository.customer', CustomerRepositoryInterface::class),
                 new SubscribedService('coreshop.repository.address', RepositoryInterface::class, attributes: new Autowire(service: 'coreshop.repository.address')),
                 new SubscribedService('coreshop.factory.address', FactoryInterface::class, attributes: new Autowire(service: 'coreshop.factory.address')),

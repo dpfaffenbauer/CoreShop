@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace CoreShop\Bundle\SubscriptionBundle\Pimcore\Repository;
 
 use CoreShop\Bundle\ResourceBundle\Pimcore\PimcoreRepository;
+use CoreShop\Component\Customer\Model\CustomerInterface;
 use CoreShop\Component\Subscription\Model\SubscriptionInterface;
 use CoreShop\Component\Subscription\Model\SubscriptionStates;
 use CoreShop\Component\Subscription\Repository\SubscriptionRepositoryInterface;
@@ -67,6 +68,16 @@ class SubscriptionRepository extends PimcoreRepository implements SubscriptionRe
     {
         $list = $this->getList();
         $list->setCondition('state = ?', [$state]);
+
+        return $list->getObjects();
+    }
+
+    public function findByCustomer(CustomerInterface $customer): array
+    {
+        $list = $this->getList();
+        $list->setCondition('customer__id = ?', [$customer->getId()]);
+        $list->setOrderKey('startDate');
+        $list->setOrder('DESC');
 
         return $list->getObjects();
     }

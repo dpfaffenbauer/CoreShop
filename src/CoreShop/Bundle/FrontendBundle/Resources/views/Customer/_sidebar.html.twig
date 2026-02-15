@@ -16,6 +16,15 @@
                 </a>
             </div>
             {% endif %}
+            {% if is_granted('CORESHOP_CUSTOMER_PROFILE_SUBSCRIPTIONS') %}
+            <div class="mb-4">
+                <a class="d-flex align-items-center text-decoration-none text-body gap-2" target="_self"
+                   href="{{ path('coreshop_customer_subscriptions') }}">
+                    <i class="bi bi-arrow-repeat text-primary"></i>
+                    <span class="link-description">{{ 'coreshop.ui.subscriptions'|trans }}</span>
+                </a>
+            </div>
+            {% endif %}
             {% if is_granted('CORESHOP_CUSTOMER_PROFILE_ADDRESSES') %}
             <div class="mb-4">
                 <a class="d-flex align-items-center text-decoration-none text-body gap-2" target="_self"
