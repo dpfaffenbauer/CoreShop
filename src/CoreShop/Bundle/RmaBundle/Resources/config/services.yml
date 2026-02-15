@@ -12,3 +12,12 @@ services:
         arguments:
             - '@coreshop.repository.order_return'
             - !php/const CoreShop\Component\Rma\ReturnStates::STATE_CANCELLED
+
+    CoreShop\Bundle\RmaBundle\EventListener\SaleDetailListener:
+        arguments:
+            - '@coreshop.repository.order_return'
+            - '@coreshop.order.return.processable'
+            - '@CoreShop\Bundle\WorkflowBundle\StateManager\WorkflowStateInfoManagerInterface'
+            - '@jms_serializer'
+        tags:
+            - { name: kernel.event_listener, event: coreshop.sale.detail.prepare, method: onSaleDetailPrepare }

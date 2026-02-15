@@ -1,0 +1,40 @@
+##### ORDER RETURN
+coreshop_admin_order_return_get_processable_items:
+    path: /%coreshop.admin.route.base%/order-return/get-return-able-items
+    requirements:
+      backend: '%coreshop.admin.route.backend_requirement%'
+    defaults:
+      backend: admin
+      _controller: 'coreshop.pimcore_controller.order_return::getReturnAbleItemsAction'
+    options:
+        expose: true
+
+coreshop_admin_order_return_create:
+    path: /%coreshop.admin.route.base%/order-return/create-return
+    requirements:
+      backend: '%coreshop.admin.route.backend_requirement%'
+    defaults:
+      backend: admin
+      _controller: 'coreshop.pimcore_controller.order_return::createReturnAction'
+    options:
+        expose: true
+
+coreshop_admin_order_return_update_state:
+    path: /%coreshop.admin.route.base%/order-return/update-return-state
+    requirements:
+      backend: '%coreshop.admin.route.backend_requirement%'
+    defaults:
+      backend: admin
+      _controller: 'coreshop.pimcore_controller.order_return::updateStateAction'
+    options:
+        expose: true
+
+coreshop_admin_order_return_render:
+    path: /%coreshop.admin.route.base%/order-return/render
+    requirements:
+      backend: '%coreshop.admin.route.backend_requirement%'
+    defaults:
+      backend: admin
+      _controller: 'coreshop.pimcore_controller.order_return::renderAction'
+    options:
+        expose: true
