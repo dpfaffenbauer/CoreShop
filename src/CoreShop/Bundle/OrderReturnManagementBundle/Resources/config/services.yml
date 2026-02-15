@@ -1,0 +1,23 @@
+imports:
+    - { resource: services/order_return.yml }
+    - { resource: services/workflow.yml }
+    - { resource: services/forms.yml }
+
+services:
+    _defaults:
+        public: true
+
+    coreshop.order.return.processable:
+        class: CoreShop\Component\Order\Processable\ProcessableOrderItems
+        arguments:
+            - '@coreshop.repository.order_return'
+            - !php/const CoreShop\Component\OrderReturnManagement\ReturnStates::STATE_CANCELLED
+
+    CoreShop\Bundle\OrderReturnManagementBundle\EventListener\SaleDetailListener:
+        arguments:
+            - '@coreshop.repository.order_return'
+            - '@coreshop.order.return.processable'
+            - '@CoreShop\Bundle\WorkflowBundle\StateManager\WorkflowStateInfoManagerInterface'
+            - '@jms_serializer'
+        tags:
+            - { name: kernel.event_listener, event: coreshop.sale.detail.prepare, method: onSaleDetailPrepare }

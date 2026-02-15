@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        public: true
+
+    CoreShop\Bundle\OrderReturnManagementBundle\Form\Type\OrderReturnCreationType:
+        tags:
+           - { name: form.type }
+
+    CoreShop\Bundle\OrderReturnManagementBundle\Form\Type\OrderReturnCreationItemsType:
+        tags:
+            - { name: form.type }

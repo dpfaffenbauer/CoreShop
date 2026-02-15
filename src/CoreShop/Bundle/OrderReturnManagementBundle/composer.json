@@ -1,0 +1,31 @@
+{
+    "name": "coreshop/order-return-management-bundle",
+    "type": "pimcore-bundle",
+    "description": "CoreShop Order Return Management Bundle",
+    "keywords": [
+        "coreshop",
+        "pimcore",
+        "ecommerce",
+        "order-return-management",
+        "returns"
+    ],
+    "homepage": "https://www.coreshop.com",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "coreshop/order-return-management": "^5.0",
+        "coreshop/order-bundle": "^5.0",
+        "coreshop/resource-bundle": "^5.0",
+        "coreshop/workflow-bundle": "^5.0",
+        "coreshop/money-bundle": "^5.0",
+        "pimcore/pimcore": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CoreShop\\Bundle\\OrderReturnManagementBundle\\": ""
+        }
+    },
+    "conflict": {
+        "coreshop/core-shop": "*"
+    }
+}

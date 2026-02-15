@@ -1,0 +1,29 @@
+{
+    "name": "coreshop/order-return-management",
+    "type": "library",
+    "description": "CoreShop Order Return Management Component",
+    "keywords": [
+        "coreshop",
+        "pimcore",
+        "ecommerce",
+        "order-return-management",
+        "returns"
+    ],
+    "homepage": "https://www.coreshop.com",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "coreshop/order": "^5.0",
+        "coreshop/resource": "^5.0",
+        "coreshop/pimcore": "^5.0",
+        "pimcore/pimcore": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CoreShop\\Component\\OrderReturnManagement\\": ""
+        }
+    },
+    "conflict": {
+        "coreshop/core-shop": "*"
+    }
+}

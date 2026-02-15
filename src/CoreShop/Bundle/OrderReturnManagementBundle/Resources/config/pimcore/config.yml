@@ -1,0 +1,13 @@
+pimcore:
+    objects:
+        class_definitions:
+            data:
+                prefixes:
+                    - CoreShop\Bundle\OrderReturnManagementBundle\CoreExtension
+
+jms_serializer:
+    metadata:
+        directories:
+            coreshop-order-return-management-component:
+                namespace_prefix: 'CoreShop\Component\OrderReturnManagement'
+                path: '@CoreShopOrderReturnManagementBundle/Resources/config/serializer'
