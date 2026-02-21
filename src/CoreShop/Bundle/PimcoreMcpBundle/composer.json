@@ -1,0 +1,55 @@
+{
+  "name": "coreshop/pimcore-mcp-bundle",
+  "type": "pimcore-bundle",
+  "description": "CoreShop - Pimcore MCP Server Bundle for managing Pimcore documents via Model Context Protocol",
+  "keywords": [
+    "coreshop",
+    "pimcore",
+    "mcp",
+    "model-context-protocol",
+    "ai"
+  ],
+  "homepage": "https://www.coreshop.com",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "CoreShop Team",
+      "email": "info@coreshop.com",
+      "homepage": "https://www.coreshop.com/",
+      "role": "Developer"
+    },
+    {
+      "name": "Dominik Pfaffenbauer",
+      "email": "dominik@pfaffenbauer.at",
+      "homepage": "https://www.pfaffenbauer.at/",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "pimcore/pimcore": "^12.3",
+    "symfony/mcp-bundle": "^0.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "CoreShop\\Bundle\\PimcoreMcpBundle\\": ""
+    }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../../*/*"
+    }
+  ],
+  "prefer-stable": true,
+  "extra": {
+    "pimcore": {
+      "bundles": [
+        "CoreShop\\Bundle\\PimcoreMcpBundle\\CoreShopPimcoreMcpBundle"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

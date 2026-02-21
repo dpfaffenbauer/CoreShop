@@ -82,7 +82,8 @@
     "coreshop/optimistic-entity-lock-bundle": "self.version",
     "coreshop/messenger-bundle": "self.version",
     "coreshop/class-definition-patch-bundle": "self.version",
-    "coreshop/test-bundle": "self.version"
+    "coreshop/test-bundle": "self.version",
+    "coreshop/pimcore-mcp-bundle": "self.version"
   },
   "require": {
     "php": "^8.3",
@@ -109,6 +110,7 @@
     "stof/doctrine-extensions-bundle": "^1.14",
     "sylius/theme-bundle": "^2.2",
     "symfony/config": "^6.3 || ^7.4",
+    "symfony/mcp-bundle": "^0.3",
     "symfony/dotenv": "^6.3 || ^7.0",
     "symfony/form": "^6.3 || ^7.0",
     "symfony/http-client": "^6.3 || ^7.0",
