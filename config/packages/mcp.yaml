@@ -1,7 +1,14 @@
 mcp:
     app: 'coreshop-pimcore-mcp'
     version: '1.0.0'
-    description: 'CoreShop Pimcore MCP Server - AI-driven document management'
+    description: 'CoreShop Pimcore MCP Server - AI-driven management of Pimcore documents, assets, and data objects.'
+    website_url: 'https://www.coreshop.org'
+    pagination_limit: 50
+    instructions: |
+        This server exposes Pimcore CMS capabilities via the Model Context Protocol.
+        Use it to manage documents, assets, data objects, and their properties.
+        Supports listing, reading, creating, updating, and deleting Pimcore entities.
+        All operations require a valid Pimcore session or API authentication.
     client_transports:
         http: true
     http:
