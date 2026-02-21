@@ -26,6 +26,7 @@ class Kernel extends PimcoreKernel
 
         $collection->addBundle(new \CoreShop\Bundle\CoreBundle\CoreShopCoreBundle(), 10);
         $collection->addBundle(new \CoreShop\Bundle\FrontendBundle\CoreShopFrontendBundle(), 1800);
+        $collection->addBundle(new \Symfony\AI\McpBundle\McpBundle());
         $collection->addBundle(new \CoreShop\Bundle\PimcoreMcpBundle\CoreShopPimcoreMcpBundle());
         $collection->addBundle(new \FriendsOfBehat\SymfonyExtension\Bundle\FriendsOfBehatSymfonyExtensionBundle());
         $collection->addBundle(new \CoreShop\Bundle\TestBundle\CoreShopTestBundle(), 0);
