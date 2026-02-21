@@ -24,6 +24,14 @@ security:
             provider: pimcore_admin
             http_basic: ~
 
+        # MCP endpoint - Bearer token auth for AI clients
+        pimcore_mcp:
+            pattern: ^/_mcp
+            stateless: true
+            provider: pimcore_admin
+            access_token:
+                token_handler: CoreShop\Bundle\PimcoreMcpBundle\Security\McpAccessTokenHandler
+
         # Pimcore Admin Bundle firewall
 #        pimcore_admin: '%pimcore_admin_bundle.firewall_settings%'
         pimcore_studio: '%pimcore_studio_backend.firewall_settings%'

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "coreshop-pimcore": {
+      "type": "http",
+      "url": "http://localhost:8098/_mcp",
+      "allowHttp": true,
+      "headers": {
+        "Authorization": "Bearer ${MCP_API_TOKEN}"
+      }
+    }
+  }
+}

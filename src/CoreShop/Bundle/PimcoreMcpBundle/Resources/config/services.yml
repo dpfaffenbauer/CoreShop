@@ -1,3 +1,6 @@
+parameters:
+    coreshop_mcp.default_admin_username: 'admin'
+
 services:
     _defaults:
         autowire: true
@@ -6,3 +9,8 @@ services:
 
     CoreShop\Bundle\PimcoreMcpBundle\Tool\:
         resource: '../../Tool/'
+
+    CoreShop\Bundle\PimcoreMcpBundle\Security\McpAccessTokenHandler:
+        arguments:
+            $apiToken: '%env(default::MCP_API_TOKEN)%'
+            $adminUsername: '%env(default:coreshop_mcp.default_admin_username:MCP_ADMIN_USERNAME)%'
