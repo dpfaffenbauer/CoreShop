@@ -1,0 +1,10 @@
+mcp:
+    app: 'coreshop-pimcore-mcp'
+    version: '1.0.0'
+    description: 'CoreShop Pimcore MCP Server - AI-driven document management'
+    client_transports:
+        http: true
+    http:
+        path: '/_mcp'
+        session:
+            store: memory
