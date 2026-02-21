@@ -20,6 +20,7 @@ namespace CoreShop\Bundle\PimcoreMcpBundle\Tool;
 use Mcp\Capability\Attribute\McpTool;
 use Pimcore\Model\Document;
 
+#[McpTool(name: 'pimcore_list_documents')]
 class ListDocuments
 {
     /**
@@ -32,7 +33,6 @@ class ListDocuments
      * @param int $offset Offset for pagination
      * @param bool $unpublished Include unpublished documents
      */
-    #[McpTool(name: 'pimcore_list_documents')]
     public function __invoke(
         ?int $parentId = null,
         ?string $parentPath = null,

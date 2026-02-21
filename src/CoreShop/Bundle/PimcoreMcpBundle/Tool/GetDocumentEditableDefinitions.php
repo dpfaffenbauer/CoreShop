@@ -21,6 +21,7 @@ use Mcp\Capability\Attribute\McpTool;
 use Pimcore\Extension\Document\Areabrick\AreabrickManagerInterface;
 use Pimcore\Model\Document;
 
+#[McpTool(name: 'pimcore_get_document_editable_definitions')]
 class GetDocumentEditableDefinitions
 {
     public function __construct(
@@ -36,7 +37,6 @@ class GetDocumentEditableDefinitions
      * @param int|null $id Document ID
      * @param string|null $path Document path (alternative to id)
      */
-    #[McpTool(name: 'pimcore_get_document_editable_definitions')]
     public function __invoke(?int $id = null, ?string $path = null): string
     {
         if ($id === null && $path === null) {

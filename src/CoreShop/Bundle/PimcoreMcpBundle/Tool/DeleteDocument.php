@@ -20,6 +20,7 @@ namespace CoreShop\Bundle\PimcoreMcpBundle\Tool;
 use Mcp\Capability\Attribute\McpTool;
 use Pimcore\Model\Document;
 
+#[McpTool(name: 'pimcore_delete_document')]
 class DeleteDocument
 {
     /**
@@ -28,7 +29,6 @@ class DeleteDocument
      * @param int|null $id Document ID to delete
      * @param string|null $path Document path (alternative to id)
      */
-    #[McpTool(name: 'pimcore_delete_document')]
     public function __invoke(?int $id = null, ?string $path = null): string
     {
         if ($id === null && $path === null) {

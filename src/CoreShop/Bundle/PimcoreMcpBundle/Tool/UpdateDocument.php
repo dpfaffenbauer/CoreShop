@@ -20,6 +20,7 @@ namespace CoreShop\Bundle\PimcoreMcpBundle\Tool;
 use Mcp\Capability\Attribute\McpTool;
 use Pimcore\Model\Document;
 
+#[McpTool(name: 'pimcore_update_document')]
 class UpdateDocument
 {
     /**
@@ -40,7 +41,6 @@ class UpdateDocument
      * @param string|null $from New sender address (email type only)
      * @param string|null $to New recipient address (email type only)
      */
-    #[McpTool(name: 'pimcore_update_document')]
     public function __invoke(
         ?int $id = null,
         ?string $path = null,

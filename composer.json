@@ -108,6 +108,7 @@
     "stof/doctrine-extensions-bundle": "^1.14",
     "sylius/theme-bundle": "^2.2",
     "symfony/config": "^6.4.14 || ^7.4",
+    "symfony/mcp-bundle": "^0.3",
     "symfony/dotenv": "^6.4.14 || ^7.2",
     "symfony/form": "^6.4.14 || ^7.2",
     "symfony/http-client": "^6.4.14 || ^7.2",

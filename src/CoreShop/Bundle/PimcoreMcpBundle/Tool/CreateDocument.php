@@ -20,10 +20,12 @@ namespace CoreShop\Bundle\PimcoreMcpBundle\Tool;
 use Mcp\Capability\Attribute\McpTool;
 use Pimcore\Model\Document;
 
+#[McpTool(name: 'pimcore_create_document')]
 class CreateDocument
 {
     /**
      * Create a new Pimcore document (page, snippet, folder, link, email, hardlink).
+     * Can also copy an existing document by providing sourceId or sourcePath.
      *
      * @param string $key Document key (URL slug). Example: "my-new-page"
      * @param string $type Document type: page, snippet, folder, link, email, hardlink
@@ -38,8 +40,10 @@ class CreateDocument
      * @param string|null $subject Email subject (email type only)
      * @param string|null $from Sender address (email type only)
      * @param string|null $to Recipient address (email type only)
+     * @param int|null $sourceId Source document ID to copy from. When provided, creates a copy instead of an empty document.
+     * @param string|null $sourcePath Source document path to copy from (alternative to sourceId). Example: "/en/my-page"
+     * @param bool $recursive When copying, whether to include child documents. Defaults to true.
      */
-    #[McpTool(name: 'pimcore_create_document')]
     public function __invoke(
         string $key,
         string $type,
@@ -54,6 +58,9 @@ class CreateDocument
         ?string $subject = null,
         ?string $from = null,
         ?string $to = null,
+        ?int $sourceId = null,
+        ?string $sourcePath = null,
+        bool $recursive = true,
     ): string {
         if ($parentPath !== null) {
             $parent = Document::getByPath($parentPath);
@@ -66,6 +73,11 @@ class CreateDocument
         }
 
         $parentId = $parentId ?? 1;
+
+        if ($sourceId !== null || $sourcePath !== null) {
+            return $this->copyDocument($sourceId, $sourcePath, $parentId, $key, $recursive);
+        }
+
         $doc = $this->createDocumentByType($type);
 
         if ($doc === null) {
@@ -122,6 +134,41 @@ class CreateDocument
             'id' => $doc->getId(),
             'path' => $doc->getRealFullPath(),
             'type' => $doc->getType(),
+        ], \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES);
+    }
+
+    private function copyDocument(?int $sourceId, ?string $sourcePath, int $parentId, string $key, bool $recursive): string
+    {
+        $source = $sourceId !== null ? Document::getById($sourceId) : Document::getByPath($sourcePath);
+
+        if (!$source) {
+            return json_encode(['error' => 'Source document not found.']);
+        }
+
+        $targetParent = Document::getById($parentId);
+
+        if (!$targetParent) {
+            return json_encode(['error' => 'Target parent document not found.']);
+        }
+
+        $service = new Document\Service();
+
+        if ($recursive) {
+            $newDoc = $service->copyRecursive($targetParent, $source);
+        } else {
+            $newDoc = $service->copyAsChild($targetParent, $source);
+        }
+
+        $newDoc->setKey($key);
+        $newDoc->save();
+
+        return json_encode([
+            'success' => true,
+            'id' => $newDoc->getId(),
+            'path' => $newDoc->getRealFullPath(),
+            'type' => $newDoc->getType(),
+            'copiedFrom' => $source->getRealFullPath(),
+            'recursive' => $recursive,
         ], \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES);
     }
 

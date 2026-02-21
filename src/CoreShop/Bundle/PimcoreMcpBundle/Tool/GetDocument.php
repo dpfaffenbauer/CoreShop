@@ -20,6 +20,7 @@ namespace CoreShop\Bundle\PimcoreMcpBundle\Tool;
 use Mcp\Capability\Attribute\McpTool;
 use Pimcore\Model\Document;
 
+#[McpTool(name: 'pimcore_get_document')]
 class GetDocument
 {
     /**
@@ -28,7 +29,6 @@ class GetDocument
      * @param int|null $id Document ID
      * @param string|null $path Document path (alternative to id). Example: "/en/my-page"
      */
-    #[McpTool(name: 'pimcore_get_document')]
     public function __invoke(?int $id = null, ?string $path = null): string
     {
         if ($id === null && $path === null) {
